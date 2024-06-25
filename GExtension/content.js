@@ -1,5 +1,5 @@
 function findProfessors() {
-    let professors = document.querySelectorAll('div.rightnclear[title="Instructor(s)"]');  // Adjust the selector to match the actual school website
+    let professors = document.querySelectorAll('div.rightnclear[title="Instructor(s)"]');
     professors.forEach(prof => {
       let profName = prof.innerText;
       chrome.runtime.sendMessage({action: "fetchRating", profName: profName}, response => {
