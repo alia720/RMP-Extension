@@ -1,12 +1,19 @@
 {
-    "manifest_version": 3,
-    "name": "Hello Extensions",
-    "description": "Base Level Extension",
-    "version": "1.0",
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": "icon16.png"
-    },
-
-    "permissions": ["activeTab", "scripting"]
+  "manifest_version": 3,
+  "name": "RateMyProf Checker",
+  "version": "1.0",
+  "description": "Displays RateMyProf rating on school website",
+  "permissions": ["activeTab", "storage", "http://localhost:3000/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.schoolwebsite.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
   }
+}
