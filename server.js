@@ -21,7 +21,7 @@ app.get('/getRating', async (req, res) => {
     await page.goto(searchURL);
 
     const data = await page.evaluate(() => {
-      const ratingElement = document.querySelector('.CardNumRating__CardNumRatingNumber-sc-17t4b9u-2.icXUyq');
+      const ratingElement = document.querySelector('[class^="CardNumRating__CardNumRatingNumber-sc-17t4b9u-2"]');
       const rating = ratingElement ? ratingElement.innerText : 'N/A';
 
       const wouldTakeAgainElement = Array.from(document.querySelectorAll('.CardFeedback__CardFeedbackItem-lq6nix-1.fyKbws'))

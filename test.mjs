@@ -1,6 +1,4 @@
-import fetch from 'node-fetch';
-
-const testProfessorName = 'Fadhel Ghannouchi';  // Professors name to test scraping
+const testProfessorName = 'Gillian Christine Ranson';  // Professors name to test scraping
 
 const testFetchRating = async (profName) => {
   try {
