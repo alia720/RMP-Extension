@@ -1,23 +1,28 @@
-document.getElementById('scrapeButton').addEventListener('click', async () => {
-    const profName = "Professor Name"; // Replace with the actual professor name or logic to get it
-    try {
-        const response = await fetch(`http://localhost:3000/getRating?profName=${encodeURIComponent(profName)}`);
-        const data = await response.json();
-
-        if (data) {
-            const scrapeList = document.getElementById('scrapeList');
-            scrapeList.innerHTML = ''; // Clear previous results
-
+document.addEventListener('DOMContentLoaded', () => {
+    const scrapeButton = document.getElementById('scrapeButton');
+    const scrapeList = document.getElementById('scrapeList');
+  
+    scrapeButton.addEventListener('click', () => {
+      console.log("Scrape button clicked");
+      
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "scrapeProfessors" }, (response) => {
+          console.log("Received response", response);
+  
+          scrapeList.innerHTML = ''; // Clear previous results
+  
+          response.professors.forEach(prof => {
             const li = document.createElement('li');
             li.innerHTML = `
-                <strong>${profName}</strong><br>
-                Rating: ${data.rating}<br>
-                Would Take Again: ${data.wouldTakeAgain}<br>
-                Difficulty: ${data.difficulty}
+              <strong>${prof.name}</strong><br>
+              Rating: ${prof.rating}<br>
+              Would Take Again: ${prof.wouldTakeAgain}<br>
+              Difficulty: ${prof.difficulty}
             `;
             scrapeList.appendChild(li);
-        }
-    } catch (error) {
-        console.error('Error fetching professor data:', error);
-    }
-});
+          });
+        });
+      });
+    });
+  });
+  
