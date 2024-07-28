@@ -3,13 +3,14 @@
   "name": "RateMyProf Checker",
   "version": "1.0",
   "description": "Displays RateMyProf rating on school website",
-  "permissions": ["activeTab", "storage", "http://localhost:3000/*"],
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://*.schoolwebsite.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
