@@ -1,7 +1,20 @@
 body {
-    min-width: 300px;
+    font-family: Arial, sans-serif;
 }
 
 .center {
     text-align: center;
+    margin-top: 50px;
+}
+
+#scrapeList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#scrapeList li {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
 }

@@ -1,50 +1,23 @@
-document.addEventListener('DOMContentLoaded', function() {
-    let scrapeListButton = document.getElementById('scrapeList');
+document.getElementById('scrapeButton').addEventListener('click', async () => {
+    const profName = "Professor Name"; // Replace with the actual professor name or logic to get it
+    try {
+        const response = await fetch(`http://localhost:3000/getRating?profName=${encodeURIComponent(profName)}`);
+        const data = await response.json();
 
-    scrapeListButton.addEventListener('click', async () => {
-        try {
-            // Receive current active tab of the window
-            let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (data) {
+            const scrapeList = document.getElementById('scrapeList');
+            scrapeList.innerHTML = ''; // Clear previous results
 
-            // Check if the URL is restricted
-            if (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
-                console.error('Cannot execute script on restricted URL:', tab.url);
-                alert('Cannot scrape this page. Please navigate to a different page.');
-                return;
-            }
-
-            // Exec script to parse list of divs
-            chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: scrapeListFromPage,
-            }, (results) => {
-                if (chrome.runtime.lastError) {
-                    console.error('Script injection failed: ' + chrome.runtime.lastError.message);
-                    return;
-                }
-                if (results && results[0] && results[0].result) {
-                    displayDivs(results[0].result);
-                }
-            });
-        } catch (error) {
-            console.error('Error executing script:', error);
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${profName}</strong><br>
+                Rating: ${data.rating}<br>
+                Would Take Again: ${data.wouldTakeAgain}<br>
+                Difficulty: ${data.difficulty}
+            `;
+            scrapeList.appendChild(li);
         }
-    });
-
-    function scrapeListFromPage() {
-        let divs = document.querySelectorAll('div');
-        let divTexts = [];
-        divs.forEach(div => divTexts.push(div.innerText));
-        return divTexts;
-    }
-
-    function displayDivs(divTexts) {
-        let ul = document.getElementById('scrapeList');
-        ul.innerHTML = ''; // Clear any existing list items
-        divTexts.forEach(text => {
-            let li = document.createElement('li');
-            li.textContent = text;
-            ul.appendChild(li);
-        });
+    } catch (error) {
+        console.error('Error fetching professor data:', error);
     }
 });
