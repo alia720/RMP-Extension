@@ -1,5 +1,30 @@
 console.log("Content script loaded");
 
+// Function to create a hyperlink for professor names
+const addHyperlinksToProfessors = () => {
+  const professors = document.querySelectorAll('div.rightnclear[title="Instructor(s)"]');
+  professors.forEach(prof => {
+    const professorName = prof.innerText.trim();
+    if (professorName) {
+      // Create a hyperlink
+      const link = document.createElement('a');
+      link.href = '#'; // Prevent default behavior
+      link.innerText = professorName;
+      
+      // Add click event to log the div or open it in the console
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        console.log('Professor div:', prof);
+        console.log('Professor name:', professorName);
+      });
+
+      // Replace the text node with the link
+      prof.innerHTML = ''; // Clear current content
+      prof.appendChild(link);
+    }
+  });
+};
+
 const fetchProfessorData = (profName) => {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ action: "fetchRating", profName: profName }, (response) => {
@@ -23,6 +48,8 @@ const fetchAllProfessors = async () => {
       return;
     }
 
+    addHyperlinksToProfessors(); // Add hyperlinks to the professors (for future update of pop up hovering)
+
     const profNames = Array.from(professors).map(prof => prof.innerText.trim());
     console.log("Professor names:", profNames);
 
@@ -40,6 +67,7 @@ const fetchAllProfessors = async () => {
   }
 };
 
+// Using Mutation Observer to watch for DOM changes as proferssor names are added a while later
 const observeProfessors = () => {
   const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
