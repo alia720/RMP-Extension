@@ -1,21 +1,91 @@
 console.log("Content script loaded");
 
-// Function to create a hyperlink for professor names
+// Create a popup div for displaying professor data
+const popup = document.createElement('div');
+popup.className = 'popup'; // Apply the class from CSS
+document.body.appendChild(popup);
+
+// Function to show popup
+const showPopup = (event, content) => {
+  popup.innerHTML = content;
+  popup.style.top = `${event.pageY + 10}px`;
+  popup.style.left = `${event.pageX + 10}px`;
+  popup.style.display = 'block';
+};
+
+// Function to hide popup
+const hidePopup = () => {
+  popup.style.display = 'none';
+};
+
+// Function to fetch professor data with caching
+const fetchProfessorData = (profName) => {
+  return new Promise((resolve, reject) => {
+    // Check if data is already in local storage
+    chrome.storage.local.get([profName], (result) => {
+      if (result[profName]) {
+        console.log(`Using cached data for ${profName}`);
+        resolve(result[profName]);
+      } else {
+        // If not in storage, fetch from the server
+        console.log(`Fetching data for ${profName}`);
+        chrome.runtime.sendMessage({ action: "fetchRating", profName: profName }, (response) => {
+          if (response.error) {
+            console.error(`Error fetching data for ${profName}:`, response.error);
+            resolve({ name: profName, rating: "N/A", wouldTakeAgain: "N/A", difficulty: "N/A" });
+          } else {
+            const data = { name: profName, ...response };
+            // Store the fetched data in local storage
+            chrome.storage.local.set({ [profName]: data });
+            resolve(data);
+          }
+        });
+      }
+    });
+  });
+};
+
+// Function to add hyperlinks to professor names
 const addHyperlinksToProfessors = () => {
   const professors = document.querySelectorAll('div.rightnclear[title="Instructor(s)"]');
   professors.forEach(prof => {
     const professorName = prof.innerText.trim();
     if (professorName) {
+      // Save the original title
+      const originalTitle = prof.getAttribute('title');
+
       // Create a hyperlink
       const link = document.createElement('a');
       link.href = '#'; // Prevent default behavior
       link.innerText = professorName;
       
-      // Add click event to log the div or open it in the console
+      // Fetch professor data on mouseover and show the popup
+      link.addEventListener('mouseover', (event) => {
+        // Temporarily clear the title to prevent the default tooltip
+        prof.removeAttribute('title');
+
+        // Show "Loading..." while fetching data
+        showPopup(event, 'Loading...');
+
+        fetchProfessorData(professorName).then(data => {
+          showPopup(event, `
+            <strong>${data.name}</strong><br>
+            Rating: ${data.rating}<br>
+            Would Take Again: ${data.wouldTakeAgain}<br>
+            Difficulty: ${data.difficulty}
+          `);
+        });
+      });
+
+      // Restore the title and hide the popup when mouse leaves the link
+      link.addEventListener('mouseout', () => {
+        prof.setAttribute('title', originalTitle);
+        hidePopup();
+      });
+
+      // Prevent default click behavior
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        console.log('Professor div:', prof);
-        console.log('Professor name:', professorName);
       });
 
       // Replace the text node with the link
@@ -25,19 +95,7 @@ const addHyperlinksToProfessors = () => {
   });
 };
 
-const fetchProfessorData = (profName) => {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({ action: "fetchRating", profName: profName }, (response) => {
-      if (response.error) {
-        console.error(`Error fetching data for ${profName}:`, response.error);
-        resolve({ name: profName, rating: "N/A", wouldTakeAgain: "N/A", difficulty: "N/A" });
-      } else {
-        resolve({ name: profName, ...response });
-      }
-    });
-  });
-};
-
+// Function to fetch all professors and add hyperlinks
 const fetchAllProfessors = async () => {
   try {
     const professors = document.querySelectorAll('div.rightnclear[title="Instructor(s)"]');
@@ -48,26 +106,13 @@ const fetchAllProfessors = async () => {
       return;
     }
 
-    addHyperlinksToProfessors(); // Add hyperlinks to the professors (for future update of pop up hovering)
-
-    const profNames = Array.from(professors).map(prof => prof.innerText.trim());
-    console.log("Professor names:", profNames);
-
-    if (profNames.length === 0) {
-      console.log("No professor names extracted.");
-      return;
-    }
-
-    const results = await Promise.all(profNames.map(fetchProfessorData));
-    console.log("Fetched data:", results);
-
-    chrome.storage.local.set({ professors: results });
+    addHyperlinksToProfessors(); // Add hyperlinks to the professors
   } catch (error) {
     console.error('Error fetching all professors:', error);
   }
 };
 
-// Using Mutation Observer to watch for DOM changes as proferssor names are added a while later
+// Using Mutation Observer to watch for DOM changes as professor names are added later
 const observeProfessors = () => {
   const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
