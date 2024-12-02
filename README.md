@@ -1,6 +1,6 @@
 # RMP-Extension
 
-A Chrome extension that fetches and displays professor ratings, difficulty levels, and feedback for over 3,000 professors on the schedule builder page for UCalgary. Built with a Node.js backend and Puppeteer, this tool automates web scraping and delivers real-time insights to users in a clean, user-friendly interface.
+A Chrome extension that fetches and displays professor ratings, difficulty levels, and feedback for over 3,000 professors on the schedule builder page for UCalgary. Built with a Node.js backend and Puppeteer, this tool automates web scraping and delivers real-time insights to users in a user-friendly interface.
 
 
 ## Features
