@@ -12,6 +12,28 @@ A Chrome extension that fetches and displays professor ratings, difficulty level
   
 ---
 
+
+## Screenshots
+
+Below are some images showcasing the functionality and user interface of the **RMP-Extension**. Click on any image to view it in full size.
+
+1. **Loading function**:  
+   <a href="Images/Loading.png" target="_blank">
+      <img src="Images/Loading.png" alt="Loading Animation" width="300">
+   </a>
+
+2. **Professor Ratings Popup**:  
+   <a href="Images/ProfRating.png" target="_blank">
+      <img src="Images/ProfRating.png" alt="Professor Ratings Popup" width="300">
+   </a>
+   
+3. **List of All Professors**:  
+   <a href="Images/ListOfAll.png" target="_blank">
+      <img src="Images/ListOfAll.png" alt="List of All Professors" width="300">
+   </a>
+
+---
+
 ## Installation
 
 1. Clone the repository:
@@ -37,24 +59,3 @@ A Chrome extension that fetches and displays professor ratings, difficulty level
    2. Enable **Developer mode** using the toggle in the top-right corner.
    3. Click **Load unpacked** and select the `GExtension` folder inside this repository.
    4. The extension should now be loaded and ready for use.
-
----
-
-## Screenshots
-
-Below are some images showcasing the functionality and user interface of the **RMP-Extension**. Click on any image to view it in full size.
-
-1. **Loading Animation**:  
-   <a href="Images/Loading.png" target="_blank">
-      <img src="Images/Loading.png" alt="Loading Animation" width="300">
-   </a>
-
-2. **Professor Ratings Popup**:  
-   <a href="Images/ProfRating.png" target="_blank">
-      <img src="Images/ProfRating.png" alt="Professor Ratings Popup" width="300">
-   </a>
-   
-3. **List of All Professors**:  
-   <a href="Images/ListOfAll.png" target="_blank">
-      <img src="Images/ListOfAll.png" alt="List of All Professors" width="300">
-   </a>
